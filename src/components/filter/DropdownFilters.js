@@ -4,18 +4,21 @@ import { Dropdown } from './Dropdown';
 export function DropdownFilter() {
   const { characters } = useData();
 
-  const statusOptions = characters.map((character) => ({
-    value: character.id.toString(),
-    text: character.status
+  const uniqueStatuses = [...new Set(characters.map((char) => char.status))];
+  const statusOptions = uniqueStatuses.map((status, index) => ({
+    value: `status-${index}`,
+    text: status
   }));
 
-  const genderOptions = characters.map((character) => ({
-    value: character.id.toString(),
+  const uniqueGender = [...new Set(characters.map((char) => char.status))];
+  const genderOptions = uniqueGender.map((character, index) => ({
+    value: `gender-${index}`,
     text: character.gender
   }));
 
-  const nameOptions = characters.map((character) => ({
-    value: character.id.toString(),
+  const uniqueSpecies = [...new Set(characters.map((char) => char.status))];
+  const nameOptions = uniqueSpecies.map((character, index) => ({
+    value: `species-${index}`,
     text: character.species
   }));
 
