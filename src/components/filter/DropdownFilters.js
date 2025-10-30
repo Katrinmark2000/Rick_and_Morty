@@ -10,16 +10,16 @@ export function DropdownFilter() {
     text: status
   }));
 
-  const uniqueGender = [...new Set(characters.map((char) => char.status))];
-  const genderOptions = uniqueGender.map((character, index) => ({
+  const uniqueGender = [...new Set(characters.map((char) => char.gender))];
+  const genderOptions = uniqueGender.map((gender, index) => ({
     value: `gender-${index}`,
-    text: character.gender
+    text: gender
   }));
 
-  const uniqueSpecies = [...new Set(characters.map((char) => char.status))];
-  const nameOptions = uniqueSpecies.map((character, index) => ({
+  const uniqueSpecies = [...new Set(characters.map((char) => char.species))];
+  const nameOptions = uniqueSpecies.map((species, index) => ({
     value: `species-${index}`,
-    text: character.species
+    text: species
   }));
 
   return (
