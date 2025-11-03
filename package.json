@@ -2,6 +2,7 @@
   "name": "elfsight-test-task",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://katrinmark2000.github.io/Rick_and_Morty/",
   "scripts": {
     "predeploy": "npm run build",
     "start": "react-app-rewired start",

@@ -6,13 +6,8 @@ export function ArrowDownIcon({ $isOpen }) {
 }
 
 const ArrowIcon = styled.img`
-  transition: transform 0.2s;
   width: 16px;
   height: 16px;
-
-  ${(props) =>
-    props.$isOpen &&
-    `
-    transform: rotate(180deg);
-  `}
+  transition: transform 0.25s ease;
+  transform: ${({ $isOpen }) => ($isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
 `;

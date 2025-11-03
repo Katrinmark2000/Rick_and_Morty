@@ -1,8 +1,14 @@
-import styled, { css } from 'styled-components';
-import { useState } from 'react';
+import styled from 'styled-components';
+import { useState, useEffect } from 'react';
 import { ArrowDownIcon } from './LogoArrow';
 
-export function Dropdown({ idDropdown, placeholder, optionsData, onChange }) {
+export function Dropdown({
+  value,
+  idDropdown,
+  placeholder,
+  optionsData,
+  onChange
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
 
@@ -16,19 +22,27 @@ export function Dropdown({ idDropdown, placeholder, optionsData, onChange }) {
     setIsOpen(false);
   };
 
-  const displayText = optionsData.find((opt) => opt.value === selectedOption)
-    ?.text;
+  useEffect(() => {
+    setSelectedOption(value || '');
+  }, [value]);
+
+  const displayText = optionsData.find((opt) => opt.value === value)?.text;
 
   return (
     <DropdownWrapper $isOpen={isOpen}>
-      <Button type="button" id={idDropdown} onClick={handleClick}>
+      <Button
+        type="button"
+        id={idDropdown}
+        onClick={handleClick}
+        $isOpen={isOpen}
+      >
         {!selectedOption ? (
           <Placeholder>{placeholder}</Placeholder>
         ) : (
-          <span>{displayText || placeholder}</span>
+          <DisplayText>{displayText}</DisplayText>
         )}
 
-        <ArrowDownIcon />
+        <ArrowDownIcon $isOpen={isOpen} />
       </Button>
 
       {isOpen && (
@@ -53,24 +67,9 @@ const DropdownWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-
-  ${({ $isOpen }) =>
-    $isOpen &&
-    css`
-      ${Button} {
-        border-bottom: 1px solid transparent;
-        border-radius: 12px 12px 0 0;
-
-        &::after {
-          position: absolute;
-          inset: 1px;
-          z-index: 0;
-          border-bottom: 1px solid var(--color-disabled);
-          border-radius: 11px;
-          content: '';
-        }
-      }
-    `}
+  max-width: 180px;
+  max-height: 40px;
+  border-radius: 8px;
 `;
 
 const Button = styled.button`
@@ -78,64 +77,70 @@ const Button = styled.button`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  height: 48px;
-  padding: 10px 20px;
-  color: var(--color-text-primary);
+  width: 180px;
+  height: 40px;
+  padding: 12px 16px;
+  color: #fff;
   font-size: inherit;
   font-family: inherit;
-  background: none;
-  border: 1px solid var(--color-text-caption);
-  border-radius: 12px;
+  background: ${({ $isOpen }) => ($isOpen ? '#334466' : '#263750')};
+  border: 1px solid #83bf46;
+  border-radius: 8px;
   cursor: pointer;
+
+  &:hover {
+    background: #334466;
+  }
+
+  @media (max-width: 950px) {
+    width: 150px;
+  }
+
+  @media (max-width: 530px) {
+    width: 240px;
+  }
 `;
 
 const Placeholder = styled.span`
-  color: var(--color-text-caption);
+  color: #b3b3b3;
+`;
+
+const DisplayText = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const DropdownList = styled.ul`
-  z-index: 4;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
   width: 100%;
-  margin-top: -1px;
-  padding: 4px 0 8px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-text-caption);
-  border-top: none;
-  border-radius: 0 0 12px 12px;
+  margin-top: 5px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0px 1px 4px rgba(12, 12, 13, 0.1);
 `;
 
 const OptionItem = styled.li`
   display: flex;
   align-items: center;
   width: 100%;
-  height: 32px;
-  padding-left: 20px;
-  color: var(--color-text-primary);
-  font-size: inherit;
-  font-family: inherit;
-  background-color: transparent;
+  font-weight: ${({ $selected }) => ($selected ? 'bold' : 'regular')};
   border: none;
   cursor: pointer;
+  padding: 10px 0 10px 8px;
 
   &:hover {
-    background-color: var(--color-disabled);
+    background: #83bf4633;
+    cursor: pointer;
   }
-
-  ${({ $selected }) =>
-    $selected &&
-    css`
-      color: var(--color-primary-pressed);
-    `}
 `;
 
 const ItemText = styled.div`
   overflow: hidden;
-  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
