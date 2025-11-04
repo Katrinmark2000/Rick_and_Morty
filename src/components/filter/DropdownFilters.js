@@ -6,7 +6,8 @@ import { Button } from './Button';
 import { useState, useEffect } from 'react';
 
 export function DropdownFilter() {
-  const { characters, fetchData, setActivePage, setApiURL } = useData();
+  const { fetchData, setActivePage, setApiURL } = useData();
+  const [characters, setCharacters] = useState([]);
   const [filters, setFilters] = useState({
     status: '',
     gender: '',
@@ -14,6 +15,25 @@ export function DropdownFilter() {
     name: '',
     type: ''
   });
+
+  const fetchAllCharacters = async () => {
+    let allCharacters = [];
+    let nextUrl = 'https://rickandmortyapi.com/api/character/';
+
+    while (nextUrl) {
+      const res = await fetch(nextUrl);
+      const data = await res.json();
+
+      allCharacters = [...allCharacters, ...data.results];
+      nextUrl = data.info?.next; //если null — значит, страниц больше нет
+    }
+
+    setCharacters(allCharacters);
+  };
+
+  useEffect(() => {
+    fetchAllCharacters();
+  }, []);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));

@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { ArrowDownIcon } from './LogoArrow';
+import { ReactComponent as CrossIcon } from '../../assets/cross-icon.svg';
+import { ReactComponent as CrossIconGreen } from '../../assets/cross-icon-green.svg';
 
 export function Dropdown({
   value,
@@ -11,6 +13,7 @@ export function Dropdown({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
+  const [isHover, setIsHover] = useState(false);
 
   const handleClick = () => {
     setIsOpen((prev) => !prev);
@@ -25,6 +28,12 @@ export function Dropdown({
   useEffect(() => {
     setSelectedOption(value || '');
   }, [value]);
+
+  const handleClear = (e) => {
+    e.stopPropagation();
+    setSelectedOption('');
+    onChange?.('');
+  };
 
   const displayText = optionsData.find((opt) => opt.value === value)?.text;
 
@@ -42,7 +51,19 @@ export function Dropdown({
           <DisplayText>{displayText}</DisplayText>
         )}
 
-        <ArrowDownIcon $isOpen={isOpen} />
+        <IconsWrapper>
+          {selectedOption ? (
+            <CrossWrapper
+              onClick={handleClear}
+              onMouseEnter={() => setIsHover(true)}
+              onMouseLeave={() => setIsHover(false)}
+            >
+              {isHover ? <CrossIconGreen /> : <CrossIcon />}
+            </CrossWrapper>
+          ) : (
+            <ArrowDownIcon $isOpen={isOpen} />
+          )}
+        </IconsWrapper>
       </Button>
 
       {isOpen && (
@@ -68,7 +89,6 @@ const DropdownWrapper = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 180px;
-  max-height: 40px;
   border-radius: 8px;
 `;
 
@@ -112,16 +132,19 @@ const DisplayText = styled.span`
 `;
 
 const DropdownList = styled.ul`
-  z-index: 1;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-top: 5px;
+  margin-top: 45px;
   background: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
   box-shadow: 0px 1px 4px rgba(12, 12, 13, 0.1);
+  max-height: 197px;
+  overflow: auto;
+  position: absolute;
 `;
 
 const OptionItem = styled.li`
@@ -143,4 +166,25 @@ const ItemText = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+`;
+
+const IconsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const CrossWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: all 0.2s ease;
+  }
 `;
