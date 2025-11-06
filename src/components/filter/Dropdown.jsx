@@ -29,6 +29,11 @@ export function Dropdown({
     [setSelectedOption, setIsOpen, onChange]
   );
 
+  const createSelectHandler = useCallback(
+    (value) => () => handleSelect(value),
+    [handleSelect]
+  );
+
   const handleMouseEnter = useCallback(() => {
     setIsHover(true);
   }, []);
@@ -103,7 +108,7 @@ export function Dropdown({
             <OptionItem
               key={option.value}
               $selected={option.value === selectedOption}
-              onClick={handleSelect}
+              onClick={createSelectHandler(option.value)}
             >
               <ItemText>{option.text}</ItemText>
             </OptionItem>
