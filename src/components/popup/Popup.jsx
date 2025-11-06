@@ -2,8 +2,12 @@ import styled, { css } from 'styled-components';
 import { PopupEpisodes } from './PopupEpisodes';
 import { PopupHeader } from './PopupHeader';
 import { PopupInfo } from './PopupInfo';
+import { useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 
 export function Popup({ settings: { visible, content = {} }, setSettings }) {
+  const popupRef = useRef(null);
+
   const {
     name,
     gender,
@@ -16,21 +20,41 @@ export function Popup({ settings: { visible, content = {} }, setSettings }) {
     episode: episodes
   } = content;
 
-  function togglePopup(e) {
-    if (e.currentTarget !== e.target) {
-      return;
+  const closePopup = useCallback(() => {
+    document.body.style.overflow = '';
+    setSettings((prev) => ({ ...prev, visible: false }));
+  }, [setSettings]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        closePopup();
+      }
+    };
+
+    const handleEscapePress = (event) => {
+      if (event.key === 'Escape') {
+        closePopup();
+      }
+    };
+
+    if (visible) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscapePress);
     }
 
-    setSettings((prevState) => ({
-      ...prevState,
-      visible: !prevState.visible
-    }));
-  }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapePress);
+      document.body.style.overflow = '';
+    };
+  }, [visible, closePopup]);
 
   return (
     <PopupContainer visible={visible}>
-      <StyledPopup>
-        <CloseIcon onClick={togglePopup} />
+      <StyledPopup ref={popupRef}>
+        <CloseIcon onClick={closePopup} />
 
         <PopupHeader
           name={name}
@@ -69,6 +93,7 @@ const PopupContainer = styled.div`
       opacity: 1;
       visibility: initial;
       pointer-events: all;
+      overflow: hidden;
     `}
 `;
 

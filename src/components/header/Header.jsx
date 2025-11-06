@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Logo } from './Logo';
-import { DropdownFilter } from '../../components';
+import { DropdownFilter } from '..';
 
 export function Header() {
   return (

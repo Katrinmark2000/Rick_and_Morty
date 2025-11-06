@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowDownIcon } from './LogoArrow';
 import { ReactComponent as CrossIcon } from '../../assets/cross-icon.svg';
 import { ReactComponent as CrossIconGreen } from '../../assets/cross-icon-green.svg';
@@ -14,26 +14,57 @@ export function Dropdown({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const [isHover, setIsHover] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     setIsOpen((prev) => !prev);
-  };
+  }, [setIsOpen]);
 
-  const handleSelect = (value) => {
-    setSelectedOption(value);
-    onChange?.(value);
-    setIsOpen(false);
-  };
+  const handleSelect = useCallback(
+    (value) => {
+      setSelectedOption(value);
+      onChange?.(value);
+      setIsOpen(false);
+    },
+    [setSelectedOption, setIsOpen, onChange]
+  );
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHover(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHover(false);
+  }, []);
 
   useEffect(() => {
     setSelectedOption(value || '');
   }, [value]);
 
-  const handleClear = (e) => {
-    e.stopPropagation();
-    setSelectedOption('');
-    onChange?.('');
-  };
+  const handleClear = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setSelectedOption('');
+      onChange?.('');
+    },
+    [setSelectedOption, onChange]
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const displayText = optionsData.find((opt) => opt.value === value)?.text;
 
@@ -55,8 +86,8 @@ export function Dropdown({
           {selectedOption ? (
             <CrossWrapper
               onClick={handleClear}
-              onMouseEnter={() => setIsHover(true)}
-              onMouseLeave={() => setIsHover(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               {isHover ? <CrossIconGreen /> : <CrossIcon />}
             </CrossWrapper>
@@ -67,12 +98,12 @@ export function Dropdown({
       </Button>
 
       {isOpen && (
-        <DropdownList id={`${idDropdown}-listbox`}>
+        <DropdownList id={`${idDropdown}-listbox`} ref={dropdownRef}>
           {optionsData.map((option) => (
             <OptionItem
               key={option.value}
               $selected={option.value === selectedOption}
-              onClick={() => handleSelect(option.value)}
+              onClick={handleSelect}
             >
               <ItemText>{option.text}</ItemText>
             </OptionItem>
