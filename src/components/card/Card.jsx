@@ -2,17 +2,15 @@ import styled from 'styled-components';
 import { CardStatus } from './CardStatus';
 import { CardTitle } from './CardTitle';
 
-export function Card({
-  status,
-  name,
-  species,
-  type,
-  gender,
-  image,
-  onClickHandler
-}) {
+export function Card(props) {
+  const { status, name, species, type, gender, image, onClickHandler } = props;
+
+  const handleClick = () => {
+    onClickHandler(props);
+  };
+
   return (
-    <StyledCard onClick={onClickHandler}>
+    <StyledCard onClick={handleClick}>
       <CardImg src={image} alt={name} />
 
       <CardInfo>
