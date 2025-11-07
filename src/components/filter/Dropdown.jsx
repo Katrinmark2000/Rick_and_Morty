@@ -74,7 +74,7 @@ export function Dropdown({
   const displayText = optionsData.find((opt) => opt.value === value)?.text;
 
   return (
-    <DropdownWrapper $isOpen={isOpen}>
+    <DropdownWrapper $isOpen={isOpen} ref={dropdownRef}>
       <Button
         type="button"
         id={idDropdown}
@@ -103,7 +103,7 @@ export function Dropdown({
       </Button>
 
       {isOpen && (
-        <DropdownList id={`${idDropdown}-listbox`} ref={dropdownRef}>
+        <DropdownList id={`${idDropdown}-listbox`}>
           {optionsData.map((option) => (
             <OptionItem
               key={option.value}
